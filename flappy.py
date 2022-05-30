@@ -53,86 +53,140 @@ except NameError:
     xrange = range
 
 
-def main():
+def main(Agent_Q_FLAP):
     global SCREEN, FPSCLOCK
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
-    pygame.display.set_caption('Flappy Bird')
+    if Agent_Q_FLAP.showUI:
+        SCREEN = pygame.display.set_mode((SCREENWIDTH, SCREENHEIGHT))
+        pygame.display.set_caption('Flappy Bird')
 
-    # numbers sprites for score display
-    IMAGES['numbers'] = (
-        pygame.image.load('assets/sprites/0.png').convert_alpha(),
-        pygame.image.load('assets/sprites/1.png').convert_alpha(),
-        pygame.image.load('assets/sprites/2.png').convert_alpha(),
-        pygame.image.load('assets/sprites/3.png').convert_alpha(),
-        pygame.image.load('assets/sprites/4.png').convert_alpha(),
-        pygame.image.load('assets/sprites/5.png').convert_alpha(),
-        pygame.image.load('assets/sprites/6.png').convert_alpha(),
-        pygame.image.load('assets/sprites/7.png').convert_alpha(),
-        pygame.image.load('assets/sprites/8.png').convert_alpha(),
-        pygame.image.load('assets/sprites/9.png').convert_alpha()
-    )
-
-    # game over sprite
-    IMAGES['gameover'] = pygame.image.load('assets/sprites/gameover.png').convert_alpha()
-    # message sprite for welcome screen
-    IMAGES['message'] = pygame.image.load('assets/sprites/message.png').convert_alpha()
-    # base (ground) sprite
-    IMAGES['base'] = pygame.image.load('assets/sprites/base.png').convert_alpha()
-
-    # sounds
-    if 'win' in sys.platform:
-        soundExt = '.wav'
+        # numbers sprites for score display
+        IMAGES['numbers'] = (
+            pygame.image.load('assets/sprites/0.png').convert_alpha(),
+            pygame.image.load('assets/sprites/1.png').convert_alpha(),
+            pygame.image.load('assets/sprites/2.png').convert_alpha(),
+            pygame.image.load('assets/sprites/3.png').convert_alpha(),
+            pygame.image.load('assets/sprites/4.png').convert_alpha(),
+            pygame.image.load('assets/sprites/5.png').convert_alpha(),
+            pygame.image.load('assets/sprites/6.png').convert_alpha(),
+            pygame.image.load('assets/sprites/7.png').convert_alpha(),
+            pygame.image.load('assets/sprites/8.png').convert_alpha(),
+            pygame.image.load('assets/sprites/9.png').convert_alpha()
+        )
     else:
-        soundExt = '.ogg'
+        # numbers sprites for score display
+        IMAGES['numbers'] = (
+            pygame.image.load('assets/sprites/0.png'),
+            pygame.image.load('assets/sprites/1.png'),
+            pygame.image.load('assets/sprites/2.png'),
+            pygame.image.load('assets/sprites/3.png'),
+            pygame.image.load('assets/sprites/4.png'),
+            pygame.image.load('assets/sprites/5.png'),
+            pygame.image.load('assets/sprites/6.png'),
+            pygame.image.load('assets/sprites/7.png'),
+            pygame.image.load('assets/sprites/8.png'),
+            pygame.image.load('assets/sprites/9.png')
+        )
 
-    SOUNDS['die']    = pygame.mixer.Sound('assets/audio/die' + soundExt)
-    SOUNDS['hit']    = pygame.mixer.Sound('assets/audio/hit' + soundExt)
-    SOUNDS['point']  = pygame.mixer.Sound('assets/audio/point' + soundExt)
-    SOUNDS['swoosh'] = pygame.mixer.Sound('assets/audio/swoosh' + soundExt)
-    SOUNDS['wing']   = pygame.mixer.Sound('assets/audio/wing' + soundExt)
+    if Agent_Q_FLAP.showUI:
+        # game over sprite
+        IMAGES['gameover'] = pygame.image.load('assets/sprites/gameover.png').convert_alpha()
+        # message sprite for welcome screen
+        IMAGES['message'] = pygame.image.load('assets/sprites/message.png').convert_alpha()
+        # base (ground) sprite
+        IMAGES['base'] = pygame.image.load('assets/sprites/base.png').convert_alpha()
+    else:
+        # game over sprite
+        IMAGES['gameover'] = pygame.image.load('assets/sprites/gameover.png')
+        # message sprite for welcome screen
+        IMAGES['message'] = pygame.image.load('assets/sprites/message.png')
+        # base (ground) sprite
+        IMAGES['base'] = pygame.image.load('assets/sprites/base.png')        
+
+    if Agent_Q_FLAP.showUI:
+        # sounds
+        if 'win' in sys.platform:
+            soundExt = '.wav'
+        else:
+            soundExt = '.ogg'
+
+        SOUNDS['die']    = pygame.mixer.Sound('assets/audio/die' + soundExt)
+        SOUNDS['hit']    = pygame.mixer.Sound('assets/audio/hit' + soundExt)
+        SOUNDS['point']  = pygame.mixer.Sound('assets/audio/point' + soundExt)
+        SOUNDS['swoosh'] = pygame.mixer.Sound('assets/audio/swoosh' + soundExt)
+        SOUNDS['wing']   = pygame.mixer.Sound('assets/audio/wing' + soundExt)
 
     while True:
         # select random background sprites
-        randBg = random.randint(0, len(BACKGROUNDS_LIST) - 1)
-        IMAGES['background'] = pygame.image.load(BACKGROUNDS_LIST[randBg]).convert()
+        if Agent_Q_FLAP.showUI:
+            randBg = random.randint(0, len(BACKGROUNDS_LIST) - 1)
+            IMAGES['background'] = pygame.image.load(BACKGROUNDS_LIST[randBg]).convert()
+        else:
+            IMAGES['background'] = pygame.image.load(BACKGROUNDS_LIST[0])
 
         # select random player sprites
-        randPlayer = random.randint(0, len(PLAYERS_LIST) - 1)
-        IMAGES['player'] = (
-            pygame.image.load(PLAYERS_LIST[randPlayer][0]).convert_alpha(),
-            pygame.image.load(PLAYERS_LIST[randPlayer][1]).convert_alpha(),
-            pygame.image.load(PLAYERS_LIST[randPlayer][2]).convert_alpha(),
-        )
+        if Agent_Q_FLAP.showUI:
+            randPlayer = random.randint(0, len(PLAYERS_LIST) - 1)
+            IMAGES['player'] = (
+                pygame.image.load(PLAYERS_LIST[randPlayer][0]).convert_alpha(),
+                pygame.image.load(PLAYERS_LIST[randPlayer][1]).convert_alpha(),
+                pygame.image.load(PLAYERS_LIST[randPlayer][2]).convert_alpha(),
+            )
+        else:
+            IMAGES['player'] = (
+                pygame.image.load(PLAYERS_LIST[0][0]),
+                pygame.image.load(PLAYERS_LIST[0][1]),
+                pygame.image.load(PLAYERS_LIST[0][2]),
+            ) 
 
         # select random pipe sprites
-        pipeindex = random.randint(0, len(PIPES_LIST) - 1)
-        IMAGES['pipe'] = (
-            pygame.transform.flip(
-                pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(), False, True),
-            pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(),
-        )
+        if Agent_Q_FLAP.showUI:
+            pipeindex = random.randint(0, len(PIPES_LIST) - 1)
+            IMAGES['pipe'] = (
+                pygame.transform.flip(
+                    pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(), False, True),
+                pygame.image.load(PIPES_LIST[pipeindex]).convert_alpha(),
+            )
 
-        # hitmask for pipes
-        HITMASKS['pipe'] = (
-            getHitmask(IMAGES['pipe'][0]),
-            getHitmask(IMAGES['pipe'][1]),
-        )
+            # hitmask for pipes
+            HITMASKS['pipe'] = (
+                getHitmask(IMAGES['pipe'][0]),
+                getHitmask(IMAGES['pipe'][1]),
+            )
 
-        # hitmask for player
-        HITMASKS['player'] = (
-            getHitmask(IMAGES['player'][0]),
-            getHitmask(IMAGES['player'][1]),
-            getHitmask(IMAGES['player'][2]),
-        )
+            # hitmask for player
+            HITMASKS['player'] = (
+                getHitmask(IMAGES['player'][0]),
+                getHitmask(IMAGES['player'][1]),
+                getHitmask(IMAGES['player'][2]),
+            )
+        else:
+            IMAGES['pipe'] = (
+                pygame.transform.flip(
+                    pygame.image.load(PIPES_LIST[0]), False, True),
+                pygame.image.load(PIPES_LIST[0]),
+            )
 
-        movementInfo = showWelcomeAnimation()
-        crashInfo = mainGame(movementInfo)
-        showGameOverScreen(crashInfo)
+            # hitmask for pipes
+            HITMASKS['pipe'] = (
+                getHitmask(IMAGES['pipe'][0]),
+                getHitmask(IMAGES['pipe'][1]),
+            )
+
+            # hitmask for player
+            HITMASKS['player'] = (
+                getHitmask(IMAGES['player'][0]),
+                getHitmask(IMAGES['player'][1]),
+                getHitmask(IMAGES['player'][2]),
+            )
+
+        movementInfo = showWelcomeAnimation(Agent_Q_FLAP)
+        crashInfo = mainGame(movementInfo, Agent_Q_FLAP)
+        showGameOverScreen(crashInfo, Agent_Q_FLAP)
 
 
-def showWelcomeAnimation():
+def showWelcomeAnimation(Agent_Q_FLAP):
     """Shows welcome screen animation of flappy bird"""
     # index of player to blit on screen
     playerIndex = 0
@@ -154,13 +208,14 @@ def showWelcomeAnimation():
     playerShmVals = {'val': 0, 'dir': 1}
 
     while True:
-        for event in pygame.event.get():
+        for event in pygame.event.get():              
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
             if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
                 # make first flap sound and return values for mainGame
-                SOUNDS['wing'].play()
+                if Agent_Q_FLAP.showUI:
+                    SOUNDS['wing'].play()
                 return {
                     'playery': playery + playerShmVals['val'],
                     'basex': basex,
@@ -175,19 +230,31 @@ def showWelcomeAnimation():
         playerShm(playerShmVals)
 
         # draw sprites
-        SCREEN.blit(IMAGES['background'], (0,0))
-        SCREEN.blit(IMAGES['player'][playerIndex],
-                    (playerx, playery + playerShmVals['val']))
-        SCREEN.blit(IMAGES['message'], (messagex, messagey))
-        SCREEN.blit(IMAGES['base'], (basex, BASEY))
-
-        pygame.display.update()
+        if Agent_Q_FLAP.showUI:
+            SCREEN.blit(IMAGES['background'], (0,0))
+            SCREEN.blit(IMAGES['player'][playerIndex],
+                        (playerx, playery + playerShmVals['val']))
+            SCREEN.blit(IMAGES['message'], (messagex, messagey))
+            SCREEN.blit(IMAGES['base'], (basex, BASEY))
+        
+        if Agent_Q_FLAP.showUI:
+            pygame.display.update()
         FPSCLOCK.tick(FPS)
 
+        if Agent_Q_FLAP.continuous:
+            # make first flap sound and return values for mainGame
+            # SOUNDS['wing'].play()
+            return {
+                'playery': playery + playerShmVals['val'],
+                'basex': basex,
+                'playerIndexGen': playerIndexGen,
+            }  
 
-def mainGame(movementInfo):
+
+def mainGame(movementInfo, Agent_Q_FLAP):
     score = playerIndex = loopIter = 0
     playerIndexGen = movementInfo['playerIndexGen']
+    global playerx, playery
     playerx, playery = int(SCREENWIDTH * 0.2), movementInfo['playery']
 
     basex = movementInfo['basex']
@@ -225,20 +292,34 @@ def mainGame(movementInfo):
 
 
     while True:
+        state = Agent_Q_FLAP.get_state(playerx, playery, playerVelY, upperPipes, lowerPipes)
+        #print(state)
+        agent_action = Agent_Q_FLAP.pass_action(state)
+        print('Current State: ', state, '\n', 'Chosen Action: ', agent_action)
+        if agent_action == 1:
+            if playery > -2 * IMAGES['player'][0].get_height():
+                playerVelY = playerFlapAcc
+                playerFlapped = True
+                if Agent_Q_FLAP.showUI:
+                    SOUNDS['wing'].play()    
+
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP):
+            if ( event.type == KEYDOWN and (event.key == K_SPACE or event.key == K_UP) ):
                 if playery > -2 * IMAGES['player'][0].get_height():
                     playerVelY = playerFlapAcc
                     playerFlapped = True
-                    SOUNDS['wing'].play()
+                    if Agent_Q_FLAP.showUI:
+                        SOUNDS['wing'].play()
 
         # check for crash here
         crashTest = checkCrash({'x': playerx, 'y': playery, 'index': playerIndex},
-                               upperPipes, lowerPipes)
+                               upperPipes, lowerPipes, Agent_Q_FLAP)
         if crashTest[0]:
+            Agent_Q_FLAP.print_Q()
+            Agent_Q_FLAP.print_progress(score)
             return {
                 'y': playery,
                 'groundCrash': crashTest[1],
@@ -256,7 +337,8 @@ def mainGame(movementInfo):
             pipeMidPos = pipe['x'] + IMAGES['pipe'][0].get_width() / 2
             if pipeMidPos <= playerMidPos < pipeMidPos + 4:
                 score += 1
-                SOUNDS['point'].play()
+                if Agent_Q_FLAP.showUI:
+                    SOUNDS['point'].play()
 
         # playerIndex basex change
         if (loopIter + 1) % 3 == 0:
@@ -297,15 +379,18 @@ def mainGame(movementInfo):
             lowerPipes.pop(0)
 
         # draw sprites
-        SCREEN.blit(IMAGES['background'], (0,0))
+        if Agent_Q_FLAP.showUI:
+            SCREEN.blit(IMAGES['background'], (0,0))
 
-        for uPipe, lPipe in zip(upperPipes, lowerPipes):
-            SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
-            SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
+        if Agent_Q_FLAP.showUI:
+            for uPipe, lPipe in zip(upperPipes, lowerPipes):
+                SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
+                SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
 
-        SCREEN.blit(IMAGES['base'], (basex, BASEY))
+            SCREEN.blit(IMAGES['base'], (basex, BASEY))
         # print score so player overlaps the score
-        showScore(score)
+        if Agent_Q_FLAP.showUI:
+            showScore(score)
 
         # Player rotation has a threshold
         visibleRot = playerRotThr
@@ -313,13 +398,15 @@ def mainGame(movementInfo):
             visibleRot = playerRot
         
         playerSurface = pygame.transform.rotate(IMAGES['player'][playerIndex], visibleRot)
-        SCREEN.blit(playerSurface, (playerx, playery))
-
-        pygame.display.update()
+        if Agent_Q_FLAP.showUI:
+            SCREEN.blit(playerSurface, (playerx, playery))
+        if Agent_Q_FLAP.showUI:
+            pygame.display.update()
         FPSCLOCK.tick(FPS)
 
 
-def showGameOverScreen(crashInfo):
+
+def showGameOverScreen(crashInfo, Agent_Q_FLAP):
     """crashes the player down and shows gameover image"""
     score = crashInfo['score']
     playerx = SCREENWIDTH * 0.2
@@ -335,11 +422,14 @@ def showGameOverScreen(crashInfo):
     upperPipes, lowerPipes = crashInfo['upperPipes'], crashInfo['lowerPipes']
 
     # play hit and die sounds
-    SOUNDS['hit'].play()
-    if not crashInfo['groundCrash']:
-        SOUNDS['die'].play()
+    if Agent_Q_FLAP.showUI:
+        SOUNDS['hit'].play()
+        if not crashInfo['groundCrash']:
+            SOUNDS['die'].play()
 
     while True:
+        if Agent_Q_FLAP.continuous and ( playery + playerHeight ) >= BASEY - 1:
+            return            
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
@@ -362,24 +452,30 @@ def showGameOverScreen(crashInfo):
                 playerRot -= playerVelRot
 
         # draw sprites
-        SCREEN.blit(IMAGES['background'], (0,0))
+        if Agent_Q_FLAP.showUI:
+            SCREEN.blit(IMAGES['background'], (0,0))
 
-        for uPipe, lPipe in zip(upperPipes, lowerPipes):
-            SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
-            SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
+        
+            for uPipe, lPipe in zip(upperPipes, lowerPipes):
+                SCREEN.blit(IMAGES['pipe'][0], (uPipe['x'], uPipe['y']))
+                SCREEN.blit(IMAGES['pipe'][1], (lPipe['x'], lPipe['y']))
 
-        SCREEN.blit(IMAGES['base'], (basex, BASEY))
-        showScore(score)
+            SCREEN.blit(IMAGES['base'], (basex, BASEY))
+        
+        if Agent_Q_FLAP.showUI:
+            showScore(score)
 
         
 
 
         playerSurface = pygame.transform.rotate(IMAGES['player'][1], playerRot)
-        SCREEN.blit(playerSurface, (playerx,playery))
-        SCREEN.blit(IMAGES['gameover'], (50, 180))
+        if Agent_Q_FLAP.showUI:
+            SCREEN.blit(playerSurface, (playerx,playery))
+            SCREEN.blit(IMAGES['gameover'], (50, 180))
 
         FPSCLOCK.tick(FPS)
-        pygame.display.update()
+        if Agent_Q_FLAP.showUI:
+            pygame.display.update()
 
 
 def playerShm(playerShm):
@@ -422,7 +518,7 @@ def showScore(score):
         Xoffset += IMAGES['numbers'][digit].get_width()
 
 
-def checkCrash(player, upperPipes, lowerPipes):
+def checkCrash(player, upperPipes, lowerPipes, Agent_Q_FLAP):
     """returns True if player collides with base or pipes."""
     pi = player['index']
     player['w'] = IMAGES['player'][0].get_width()
@@ -444,9 +540,15 @@ def checkCrash(player, upperPipes, lowerPipes):
             lPipeRect = pygame.Rect(lPipe['x'], lPipe['y'], pipeW, pipeH)
 
             # player and upper/lower pipe hitmasks
-            pHitMask = HITMASKS['player'][pi]
-            uHitmask = HITMASKS['pipe'][0]
-            lHitmask = HITMASKS['pipe'][1]
+            if Agent_Q_FLAP.showUI:
+                pHitMask = HITMASKS['player'][pi]
+                uHitmask = HITMASKS['pipe'][0]
+                lHitmask = HITMASKS['pipe'][1]
+            else:
+                pHitMask = getHitmask(pygame.image.load(PLAYERS_LIST[0][pi]))
+                uHitmask = getHitmask(pygame.image.load(PLAYERS_LIST[0][0]))
+                lHitmask = getHitmask(pygame.image.load(PLAYERS_LIST[0][1]))
+
 
             # if bird collided with upipe or lpipe
             uCollide = pixelCollision(playerRect, uPipeRect, pHitMask, uHitmask)
@@ -483,4 +585,5 @@ def getHitmask(image):
     return mask
 
 if __name__ == '__main__':
-    main()
+    Agent_Q_FLAP = Agent_Q_FLAP(R = {'win': 1, 'lose': -10000}, showUI = True, continuous = False)
+    main(Q_AGENT_FLAP)
