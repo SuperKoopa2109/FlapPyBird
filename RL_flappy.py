@@ -5,7 +5,7 @@ from numpy.linalg import norm
 import sys
 
 class Agent_Q_FLAP():
-    Q = [] # Q Values
+    Q = {} # Q Values
     A = {} # Actions
     S = {} # States
     R = {} # Rewards
@@ -16,14 +16,18 @@ class Agent_Q_FLAP():
     showUI = True
     max_score = 0
 
+    curr_state = ()
+    prev_state = ()
+
     def __init__(self, R, showUI = True, continuous = False):
         # initialize Qs
         self.R = R 
         self.A = [0, 1]
-        self.S = [(x * 50, y * 50, vel) for x in range(100) for y in range(100) for vel in np.arange(-15, 16)]
-        self.Q = np.random.rand(len(self.S), len(self.A))
+        self.S = #[(x * 50, y * 50, vel) for x in range(100) for y in range(100) for vel in np.arange(-15, 16)]
+        self.Q = {} "np.random.rand(len(self.S), len(self.A))
         self.continuous = continuous
         self.showUI = showUI
+        self.curr_state = (1000,1000,-9)
         #print(self.S)
         
     def get_state(self, playerx, playery, playerVelY, upperPipes, lowerPipes):
@@ -45,9 +49,13 @@ class Agent_Q_FLAP():
                 delta_x = round( ( lPipe['x'] - playerx ) / 50 ) * 50
                 delta_y = round( ( lPipe['y'] - playery ) / 50 ) * 50
             if ( (delta_x, delta_y, playerVelY) in self.S ):
-                return (delta_x, delta_y, playerVelY)
+                self.prev_state = self.curr_state
+                self.curr_state = (delta_x, delta_y, playerVelY)
+                return self.curr_state
             else:
-                return (0, 0, playerVelY)
+                self.prev_state = self.curr_state
+                self.curr_state = (1000, 1000, playerVelY)
+                return self.curr_state
         # for uPipe, lPipe in zip(upperPipes, lowerPipes):
             #if uPipe['x'] > playerx:
                 #print('THE NORM ', norm(np.array([playerx, playery]), np.array([uPipe['x'], uPipe['y']])) )

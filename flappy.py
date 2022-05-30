@@ -239,7 +239,7 @@ def showWelcomeAnimation(Agent_Q_FLAP):
         
         if Agent_Q_FLAP.showUI:
             pygame.display.update()
-        FPSCLOCK.tick(FPS)
+            FPSCLOCK.tick(FPS)
 
         if Agent_Q_FLAP.continuous:
             # make first flap sound and return values for mainGame
@@ -276,8 +276,11 @@ def mainGame(movementInfo, Agent_Q_FLAP):
         {'x': SCREENWIDTH + 200 + (SCREENWIDTH / 2), 'y': newPipe2[1]['y']},
     ]
 
-    dt = FPSCLOCK.tick(FPS)/1000
-    pipeVelX = -128 * dt
+    if Agent_Q_FLAP.showUI:
+        pipeVelX = -8
+    else:
+        dt = FPSCLOCK.tick(FPS)/1000
+        pipeVelX = -128 * dt
 
     # player velocity, max velocity, downward acceleration, acceleration on flap
     playerVelY    =  -9   # player's velocity along Y, default same as playerFlapped
@@ -402,7 +405,7 @@ def mainGame(movementInfo, Agent_Q_FLAP):
             SCREEN.blit(playerSurface, (playerx, playery))
         if Agent_Q_FLAP.showUI:
             pygame.display.update()
-        FPSCLOCK.tick(FPS)
+            FPSCLOCK.tick(FPS)
 
 
 
@@ -473,9 +476,10 @@ def showGameOverScreen(crashInfo, Agent_Q_FLAP):
             SCREEN.blit(playerSurface, (playerx,playery))
             SCREEN.blit(IMAGES['gameover'], (50, 180))
 
-        FPSCLOCK.tick(FPS)
+        
         if Agent_Q_FLAP.showUI:
             pygame.display.update()
+            FPSCLOCK.tick(FPS)
 
 
 def playerShm(playerShm):
