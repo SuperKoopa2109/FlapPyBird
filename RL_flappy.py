@@ -23,15 +23,14 @@ class Agent_Q_FLAP():
         # initialize Qs
         self.R = R 
         self.A = [0, 1]
-        self.S = #[(x * 50, y * 50, vel) for x in range(100) for y in range(100) for vel in np.arange(-15, 16)]
-        self.Q = {} "np.random.rand(len(self.S), len(self.A))
+        self.S = [(x * 50, y * 50, vel) for x in range(100) for y in range(100) for vel in np.arange(-15, 16)]
+        self.Q = {} #np.random.rand(len(self.S), len(self.A))
         self.continuous = continuous
         self.showUI = showUI
         self.curr_state = (1000,1000,-9)
         #print(self.S)
         
     def get_state(self, playerx, playery, playerVelY, upperPipes, lowerPipes):
-        
         playerMidPos = playerx + flappy.IMAGES['player'][0].get_width() / 2
         dUpper = 0
         dLower = 0
@@ -75,14 +74,14 @@ class Agent_Q_FLAP():
         #    return (0, 0, playerVelY)
 
 
-    def pass_action(self, state):
+    def pass_action(self):
         
         # Exploration check
         explore_check = np.random.rand()
         if explore_check < self.exploration:
             return np.random.choice(self.A)
         else:
-            return np.argmax( np.array([self.calc_Q(state, a) for a in self.A]) )
+            return np.argmax( np.array([self.calc_Q(self.curr_state, a) for a in self.A]) )
 
     def print_Q(self):
         print('current_Q: ', self.Q)

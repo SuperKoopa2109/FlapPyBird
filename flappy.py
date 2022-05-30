@@ -297,7 +297,7 @@ def mainGame(movementInfo, Agent_Q_FLAP):
     while True:
         state = Agent_Q_FLAP.get_state(playerx, playery, playerVelY, upperPipes, lowerPipes)
         #print(state)
-        agent_action = Agent_Q_FLAP.pass_action(state)
+        agent_action = Agent_Q_FLAP.pass_action()
         print('Current State: ', state, '\n', 'Chosen Action: ', agent_action)
         if agent_action == 1:
             if playery > -2 * IMAGES['player'][0].get_height():
